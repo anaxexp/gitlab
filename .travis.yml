@@ -1,0 +1,20 @@
+language: bash
+
+services:
+  - docker
+
+env:
+  global:
+    - LATEST_TAG=10.6
+  matrix:
+    - TAG=10.6 GITLAB_VER=10.6.1 EXTRA_TAG=10
+
+script:
+  - set -e
+  - cd ./"${GITLAB_VER:0:2}"
+  - make compare-orig-configs
+  - make
+  - make test
+
+after_success:
+  - bash "${TRAVIS_BUILD_DIR}/travis_release"

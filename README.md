@@ -1,0 +1,164 @@
+# GitLab CE Docker Container Image 
+
+[![Build Status](https://travis-ci.org/anaxexp/gitlab.svg?branch=master)](https://travis-ci.org/anaxexp/gitlab)
+[![Docker Pulls](https://img.shields.io/docker/pulls/anaxexp/gitlab.svg)](https://hub.docker.com/r/anaxexp/gitlab)
+[![Docker Stars](https://img.shields.io/docker/stars/anaxexp/gitlab.svg)](https://hub.docker.com/r/anaxexp/gitlab)
+[![Docker Layers](https://images.microbadger.com/badges/image/anaxexp/gitlab.svg)](https://microbadger.com/images/anaxexp/gitlab)
+
+## Table of Contents
+
+* [Docker Images](#docker-images)
+* [Documentation](#documentation)
+* [Environment Variables](#environment-variables)
+* [Orchestration actions](#orchestration-actions)
+* [Deployment](#deployment)
+
+## Docker Images
+
+!!! For better reliability we release images with stability tags (`anaxexp/gitlab:10-X.X.X`) which correspond to [git tags](https://github.com/anaxexp/gitlab/releases). We **STRONGLY RECOMMEND** using images only with stability tags. 
+
+Overview:
+
+* All images are based on Alpine Linux
+* Base image: [anaxexp/ruby](https://github.com/anaxexp/ruby)
+* [Travis CI builds](https://travis-ci.org/anaxexp/gitlab) 
+* [Docker Hub](https://hub.docker.com/r/anaxexp/gitlab)
+
+Supported tags and respective `Dockerfile` links:
+
+* `10`, `10.6`, `latest` [_(Dockerfile)_](https://github.com/anaxexp/gitlab/tree/master/10/Dockerfile)
+
+## Documentation
+
+Full documentation available at https://anaxexp.com/stacks/gitlab/docs
+
+## Environment Variables
+
+| Variable                                    | Default Value                         | Description  |
+| ------------------------------------------- | ------------------------------------- | ------------ |
+| `DB_ADAPTER`                                | `postgresql`                          |              |
+| `DB_HOST`                                   | `postgres`                            |              |
+| `DB_NAME`                                   | `gitlab`                              |              |
+| `DB_PASS`                                   | `gitlab`                              |              |
+| `DB_PORT`                                   | `5432`                                |              |
+| `DB_USER`                                   | `gitlab`                              |              |
+| `GITLAB_ARTIFACTS_ENABLED`                  | `true`                                |              |
+| `GITLAB_BACKUP_ARCHIVE_PERMISSION`          | `0640`                                |              |
+| `GITLAB_BACKUP_AWS_UPLOAD_REGION`           | `eu-west-1`                           |              |
+| `GITLAB_BACKUP_KEEP_TIME`                   | `604800`                              |              |
+| `GITLAB_BACKUP_PG_SCHEMA`                   | `public`                              |              |
+| `GITLAB_BACKUP_UPLOAD_ACCESS_KEY_ID`        |                                       |              |
+| `GITLAB_BACKUP_UPLOAD_ENCRYPTION`           | `AES256`                              |              |
+| `GITLAB_BACKUP_UPLOAD_MULTIPART_CHUNK_SIZE` | `104857600`                           |              |
+| `GITLAB_BACKUP_UPLOAD_PROVIDER`             |                                       | AWS / Google |
+| `GITLAB_BACKUP_UPLOAD_REMOTE_DIRECTORY`     |                                       |              |
+| `GITLAB_BACKUP_UPLOAD_SECRET_ACCESS_KEY`    |                                       |              |
+| `GITLAB_BACKUP_UPLOAD_STORAGE_CLASS`        | `STANDARD`                            |              |
+| `GITLAB_CDN_HOST`                           |                                       |              |
+| `GITLAB_CI_ADD_PUSHER`                      | `true`                                |              |
+| `GITLAB_CI_ALL_BROKEN_BUILDS`               | `true`                                |              |
+| `GITLAB_CI_BUILDS_PATH`                     | `builds/`                             |              |
+| `GITLAB_EMAIL_DISPLAY_NAME`                 | `GitLab`                              |              |
+| `GITLAB_EMAIL_ENABLED`                      | `true`                                |              |
+| `GITLAB_EMAIL_FROM`                         | `gitlab@example.com`                  |              |
+| `GITLAB_EMAIL_REPLY_TO`                     | `noreply@example.com`                 |              |
+| `GITLAB_EMAIL_SUBJECT_SUFFIX`               |                                       |              |
+| `GITLAB_HOST`                               | `localhost`                           |              |
+| `GITLAB_HTTPS`                              | `false`                               |              |
+| `GITLAB_INCOMING_EMAIL`                     | `false`                               |              |
+| `GITLAB_INCOMING_EMAIL_ADDRESS`             | `gitlab-incoming+%{key}@gmail.com`    |              |
+| `GITLAB_INCOMING_EMAIL_HOST`                | `imap.gmail.com`                      |              |
+| `GITLAB_INCOMING_EMAIL_IDLE_TIMEOUT`        | `60`                                  |              |
+| `GITLAB_INCOMING_EMAIL_MAILBOX`             | `inbox`                               |              |
+| `GITLAB_INCOMING_EMAIL_PASSWORD`            |                                       |              |
+| `GITLAB_INCOMING_EMAIL_PORT`                | `993`                                 |              |
+| `GITLAB_INCOMING_EMAIL_SSL`                 | `true`                                |              |
+| `GITLAB_INCOMING_EMAIL_START_TLS`           | `false`                               |              |
+| `GITLAB_INCOMING_EMAIL_USER`                | `gitlab-incoming@gmail.com`           |              |
+| `GITLAB_LDAP_ACTIVE_DIRECTORY`              | `true`                                |              |
+| `GITLAB_LDAP_ALLOW_USERNAME_OR_EMAIL_LOGIN` | `false`                               |              |
+| `GITLAB_LDAP_BASE`                          |                                       |              |
+| `GITLAB_LDAP_BIND_DN`                       |                                       |              |
+| `GITLAB_LDAP_BLOCK_AUTO_CREATED_USERS`      | `false`                               |              |
+| `GITLAB_LDAP_CA_FILE`                       |                                       |              |
+| `GITLAB_LDAP_ENABLED`                       | `false`                               |              |
+| `GITLAB_LDAP_ENCRYPTION`                    | `plain`                               |              |
+| `GITLAB_LDAP_HOST`                          |                                       |              |
+| `GITLAB_LDAP_LABEL`                         | `LDAP`                                |              |
+| `GITLAB_LDAP_PASSWORD`                      |                                       |              |
+| `GITLAB_LDAP_PORT`                          | `389`                                 |              |
+| `GITLAB_LDAP_SSL_VERSION`                   |                                       |              |
+| `GITLAB_LDAP_TIMEOUT`                       | `10`                                  |              |
+| `GITLAB_LDAP_UID`                           | `sAMAccountName`                      |              |
+| `GITLAB_LDAP_USER_FILTER`                   |                                       |              |
+| `GITLAB_LDAP_VERIFY_CERTIFICATES`           | `true`                                |              |
+| `GITLAB_LFS_ENABLED`                        | `true`                                |              |
+| `GITLAB_LOG_LEVEL`                          | `info`                                |              |
+| `GITLAB_PAGES_ENABLED`                      | `false`                               |              |
+| `GITLAB_PAGES_EXTERNAL_HTTP`                |                                       |              |
+| `GITLAB_PAGES_EXTERNAL_HTTPS`               |                                       |              |
+| `GITLAB_PAGES_HOST`                         |                                       |              |
+| `GITLAB_PAGES_HTTPS`                        | `false`                               |              |
+| `GITLAB_PAGES_PORT`                         | `80`                                  |              |
+| `GITLAB_REGISTRY_API_URL`                   | `http://docker-registry:5000/`        |              |
+| `GITLAB_REGISTRY_ENABLED`                   | `false`                               |              |
+| `GITLAB_REGISTRY_HOST`                      |                                       |              |
+| `GITLAB_REGISTRY_ISSUER`                    | `gitlab-issuer`                       |              |
+| `GITLAB_REGISTRY_KEY`                       | `/mnt/data/certs/registry-auth.key`   |              |
+| `GITLAB_REGISTRY_PATH`                      | `shared/registry`                     |              |
+| `GITLAB_REGISTRY_PORT`                      | `80`                                  |              |
+| `GITLAB_ROOT_EMAIL`                         |                                       |              |
+| `GITLAB_ROOT_PASSWORD`                      | `80`                                  |              |
+| `GITLAB_SECRETS_DB_KEY_BASE`                |                                       |              |
+| `GITLAB_SECRETS_OTP_KEY_BASE`               |                                       |              |
+| `GITLAB_SECRETS_OPENID_CONNECT_SIGNING_KEY` |                                       |              |
+| `GITLAB_SECRETS_SECRET_KEY_BASE`            |                                       |              |
+| `GITLAB_SECRETS_SHELL`                      |                                       |              |
+| `GITLAB_SECRETS_WORKHORSE`                  |                                       |              |
+| `GITLAB_SHELL_AUDIT_USERNAMES`              | `false`                               |              |
+| `GITLAB_SHELL_GITLAB_URL`                   | `gitlab`                              |              |
+| `GITLAB_SHELL_LOG_LEVEL`                    | `INFO`                                |              |
+| `GITLAB_SHELL_SSH_PORT`                     | `22`                                  |              |
+| `GITLAB_SHELL_GIT_TIMEOUT`                  | `10800`                               |              |
+| `GITLAB_SHELL_RECEIVE_PACK`                 | `true`                                |              |
+| `GITLAB_SHELL_UPLOAD_PACK`                  | `true`                                |              |
+| `GITLAB_SMTP_ADDRESS`                       |                                       |              |
+| `GITLAB_SMTP_DOMAIN`                        | `gitlab.company.com`                  |              |
+| `GITLAB_SMTP_PASSWORD`                      |                                       |              |
+| `GITLAB_SMTP_PORT`                          | `25`                                  |              |
+| `GITLAB_SMTP_USER`                          |                                       |              |
+| `GITLAB_UNICORN_TIMEOUT`                    | `60`                                  |              |
+| `GITLAB_UNICORN_WORKER_PROCESSES`           | `3`                                   |              |
+| `REDIS_HOST`                                | `redis`                               |              |
+| `REDIS_PASS`                                |                                       |              |
+| `REDIS_PORT`                                | `6379`                                |              |
+| `SSHD_LOG_LEVEL`                            | `VERBOSE`                             |              |
+| `SSHD_PASSWORD_AUTHENTICATION`              | `no`                                  |              |
+| `SSHD_PERMIT_USER_ENV`                      | `yes`                                 |              |
+| `SSHD_USE_DNS`                              | `no`                                  |              |
+
+## Orchestration actions
+
+Usage:
+```
+make COMMAND [params ...]
+
+commands:
+    init-data-dir 
+    init-db
+    backup [skip]
+    restore timestamp
+    check-ready [host max_try wait_seconds delay_seconds]
+    gitlab-readiness [host max_try wait_seconds delay_seconds]
+    gitlab-liveness [host max_try wait_seconds delay_seconds]
+ 
+default params values:
+    host localhost
+    max_try 1
+    wait_seconds 1
+    delay_seconds 0
+```
+
+## Deployment
+
+You can deploy GitLab stack manually via docker-compose as described [here](https://anaxexp.com/stacks/gitlab/docs) or deploy to your own server via [![AnaxExp](https://www.google.com/s2/favicons?domain=anaxexp.com) AnaxExp](https://anaxexp.com).

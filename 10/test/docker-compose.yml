@@ -1,0 +1,139 @@
+version: '2'
+
+services:
+
+  nginx:
+    image: anaxexp/gitlab-nginx:10-1.13
+    depends_on:
+      - workhorse
+    ports:
+      - "80:80"
+    volumes:
+      - data:/mnt/data
+
+  workhorse:
+    image: $IMAGE
+    depends_on:
+      - gitlab
+      - redis
+    env_file:
+      - gitlab.env
+    command: /etc/init.d/workhorse
+    expose:
+      - "8181"
+    volumes:
+      - data:/mnt/data
+
+  postgres:
+    image: anaxexp/postgres:10.1
+    environment:
+      POSTGRES_USER: gitlab
+      POSTGRES_PASSWORD: gitlab
+      POSTGRES_DB: gitlab
+      POSTGRES_DB_EXTENSIONS: pg_trgm
+
+  redis:
+    image: anaxexp/redis:4.0
+    environment:
+      REDIS_PASSWORD: redispassword
+
+  gitaly:
+    image: $IMAGE
+    env_file:
+      - gitlab.env
+    command: /etc/init.d/gitaly
+    expose:
+      - "9999"
+    volumes:
+      - data:/mnt/data
+
+  gitlab:
+    image: $IMAGE
+    depends_on:
+      - redis
+      - postgres
+      - gitaly
+    env_file:
+      - gitlab.env
+    expose:
+      - "8080"
+    volumes:
+      - data:/mnt/data
+
+  sidekiq:
+    image: $IMAGE
+    depends_on:
+      - redis
+    env_file:
+      - gitlab.env
+    command: /etc/init.d/sidekiq
+    volumes:
+      - data:/mnt/data
+
+  mailroom:
+    image: $IMAGE
+    depends_on:
+      - redis
+    env_file:
+      - gitlab.env
+    command: /etc/init.d/mailroom
+    volumes:
+      - data:/mnt/data
+
+  sshd:
+    image: $IMAGE
+    env_file:
+      - gitlab.env
+    working_dir: /home/git/gitlab-shell
+    command: sudo /usr/sbin/sshd -De
+    ports:
+      - "2222:22"
+    volumes:
+      - data:/mnt/data
+
+  pages:
+    image: $IMAGE
+    env_file:
+        - gitlab.env
+    environment:
+      DEBUG: 1
+      GITLAB_PAGES_DOMAIN: pages.gitlab.loc
+    command: /etc/init.d/pages
+    volumes:
+      - data:/mnt/data
+
+  opensmtpd:
+    image: anaxexp/opensmtpd
+    environment:
+      RELAY_HOST: $RELAY_HOST
+      RELAY_USER: $RELAY_USER
+      RELAY_PASSWORD: $RELAY_PASSWORD
+
+#  registry:
+#    image: registry:2
+#    depends_on:
+#      - gitlab
+#    environment:
+#      REGISTRY_STORAGE_CACHE_BLOBDESCRIPTOR: redis
+#      REGISTRY_REDIS_ADDR: redis:6379
+#      REGISTRY_AUTH_TOKEN_ROOTCERTBUNDLE: /mnt/data/certs/registry-auth.crt
+#      REGISTRY_AUTH_TOKEN_REALM: http://gitlab/jwt/auth
+#      REGISTRY_AUTH_TOKEN_SERVICE: container_registry
+#      REGISTRY_AUTH_TOKEN_ISSUER: gitlab-issuer
+#    volumes:
+#      - data:/mnt/data
+
+  runner:
+    image: anaxexp/gitlab-runner
+    environment:
+      CI_SERVER_URL: http://gitlab.loc/
+#      REGISTRATION_TOKEN: registration-token
+    external_links:
+     - nginx:gitlab.loc
+    depends_on:
+      - gitlab
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+volumes:
+  data:

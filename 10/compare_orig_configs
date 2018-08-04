@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+
+set -e
+
+if [[ -n "${DEBUG}" ]]; then
+    set -x
+fi
+
+gitlab_ver=$1
+
+url="https://gitlab.com/gitlab-org"
+gitlab_url="${url}/gitlab-ce/raw/v${gitlab_ver}"
+gitlab_config_url="${url}/gitlab-ce/raw/v${gitlab_ver}/config"
+
+gitaly_ver=$(wget -qO- "${gitlab_url}/GITALY_SERVER_VERSION")
+gitlab_shell_ver=$(wget -qO- "${gitlab_url}/GITLAB_SHELL_VERSION")
+
+array=(
+    "./orig/gitlab/database.yml.postgresql::${gitlab_config_url}/database.yml.postgresql"
+    "./orig/gitlab/gitlab.yml.example::${gitlab_config_url}/gitlab.yml.example"
+    "./orig/gitlab/resque.yml.example::${gitlab_config_url}/resque.yml.example"
+    "./orig/gitlab/secrets.yml.example::${gitlab_config_url}/secrets.yml.example"
+    "./orig/gitlab/unicorn.rb.example::${gitlab_config_url}/unicorn.rb.example"
+    "./orig/gitlab/initializers/smtp_settings.rb.sample::${gitlab_config_url}/initializers/smtp_settings.rb.sample"
+    "./orig/gitlab/environments/production.rb::${gitlab_config_url}/environments/production.rb"
+    "./orig/gitaly/config.toml.example::${url}/gitaly/raw/v${gitaly_ver}/config.toml.example"
+    "./orig/gitlab-shell/config.yml.example::${url}/gitlab-shell/raw/v${gitlab_shell_ver}/config.yml.example"
+)
+
+outdated=0
+
+for index in "${array[@]}" ; do
+    local="${index%%::*}"
+    url="${index##*::}"
+
+    orig="/tmp/${RANDOM}"
+    wget -qO "${orig}" "${url}"
+
+    echo "Checking ${local}"
+
+    if diff --strip-trailing-cr "${local}" "${orig}"; then
+        echo "OK"
+    else
+        echo "!!! OUTDATED"
+        echo "${url}"
+        outdated=1
+    fi
+
+    rm -f "${orig}"
+done
+
+[[ "${outdated}" == 0 ]] || exit 1
